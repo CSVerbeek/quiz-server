@@ -1,1 +1,116 @@
-{"name":"New Quiz","id":"c3913cb6-d64b-4280-b7e3-d5011fdf4294","questions":[{"question":"How do you call the Moon in French?","answers":[{"answer":"La Lune","isCorrect":true},{"answer":"This is not the corrext answer","isCorrect":false}],"id":"93f9507c-eba7-43c6-a046-a49a47f32716"}]}
+{
+  "name": "Solar system quiz",
+  "id": "c3913cb6-d64b-4280-b7e3-d5011fdf4294",
+  "questions": [
+    {
+      "question": "How do you call the Moon in French?",
+      "answers": [
+        {
+          "answer": "La Lune",
+          "isCorrect": true
+        },
+        {
+          "answer": "Le moon",
+          "isCorrect": false
+        },
+        {
+          "answer": "La Terre",
+          "isCorrect": false
+        },
+        {
+          "answer": "Le Soleil",
+          "isCorrect": false
+        }
+      ],
+      "id": "93f9507c-eba7-43c6-a046-a49a47f32716"
+    },
+    {
+      "question": "Which planet is known as the Red Planet?",
+      "answers": [
+        {
+          "answer": "Mars",
+          "isCorrect": true
+        },
+        {
+          "answer": "Jupiter",
+          "isCorrect": false
+        },
+        {
+          "answer": "Venus",
+          "isCorrect": false
+        },
+        {
+          "answer": "Mercury",
+          "isCorrect": false
+        }
+      ],
+      "id": "1a293847-b5f8-42b2-a313-985cfc3b621c"
+    },
+    {
+      "question": "What is the largest planet in the Solar System?",
+      "answers": [
+        {
+          "answer": "Jupiter",
+          "isCorrect": true
+        },
+        {
+          "answer": "Saturn",
+          "isCorrect": false
+        },
+        {
+          "answer": "Earth",
+          "isCorrect": false
+        },
+        {
+          "answer": "Neptune",
+          "isCorrect": false
+        }
+      ],
+      "id": "67cd1234-3f89-4dcb-a234-df10e4a12345"
+    },
+    {
+      "question": "Which celestial body is also known as the 'Morning Star'?",
+      "answers": [
+        {
+          "answer": "Venus",
+          "isCorrect": true
+        },
+        {
+          "answer": "Mars",
+          "isCorrect": false
+        },
+        {
+          "answer": "Mercury",
+          "isCorrect": false
+        },
+        {
+          "answer": "Jupiter",
+          "isCorrect": false
+        }
+      ],
+      "id": "8496c23a-2abc-4b79-8f32-40c5a9d12345"
+    },
+    {
+      "question": "What is the primary component of the Sun?",
+      "answers": [
+        {
+          "answer": "Hydrogen",
+          "isCorrect": true
+        },
+        {
+          "answer": "Helium",
+          "isCorrect": false
+        },
+        {
+          "answer": "Oxygen",
+          "isCorrect": false
+        },
+        {
+          "answer": "Nitrogen",
+          "isCorrect": false
+        }
+      ],
+      "id": "1234abcd-5678-4e12-91de-1234567890ab"
+    }
+  ]
+}

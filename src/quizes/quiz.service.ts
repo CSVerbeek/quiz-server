@@ -19,6 +19,6 @@ export class QuizService {
   }
 
   async findById(quizId: Quiz['id']) {
-    this.quizRepository.getById(quizId);
+    return this.quizRepository.getById(quizId);
   }
 }

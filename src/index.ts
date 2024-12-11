@@ -1,10 +1,10 @@
 import express from 'express';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
-import { v4 as uuidv4 } from 'uuid';
 import { QuizesController } from './quizes/quizes.controller';
 import { QuizService } from './quizes/quiz.service';
 import { FileSystemQuizRepository } from './quizes/file-system-quiz.repository';
+import { Question } from './questions/question';
 
 const app = express();
 app.use(express.json());
@@ -27,8 +27,8 @@ interface Room {
   id: string;
   players: Player[];
   currentQuestionIndex: number;
-  questions: string[]; // List of questions for the quiz
-  answers: Map<string, string>; // Map playerId -> Answer
+  questions: Question[];
+  answers: Map<string, string>;
 }
 
 const rooms: Map<string, Room> = new Map();
@@ -50,6 +50,14 @@ app.post('/question', (req, res) => {
     res.status(201).send(quiz);
   });
 });
+
+function shuffleQuestions(questions: Question[]): Question[] {
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+  return questions;
+}
 
 /**
  * Socket.IO logic for managing quiz game
@@ -80,17 +88,23 @@ io.on('connection', socket => {
   });
 
   // Start a new quiz (create a new room)
-  socket.on('startQuiz', ({ questions }, callback) => {
-    if (!questions || questions.length === 0) {
-      return callback({ success: false, message: 'Questions are required to start a quiz' });
+  socket.on('startQuiz', async ({ quizId, roomName }, callback) => {
+    if (!roomName || roomName.length === 0) {
+      return callback({ success: false, message: 'A roomname is required to start a quiz' });
+    }
+    if (rooms.get(roomName)) {
+      return callback({ success: false, message: 'There is already a quiz going on with this room name' });
+    }
+    if (!quizId || quizId.length === 0) {
+      return callback({ success: false, message: 'A quiz is required to start a quiz' });
     }
 
-    const roomId = uuidv4();
+    const roomId = roomName;
     const newRoom: Room = {
       id: roomId,
       players: [],
       currentQuestionIndex: 0,
-      questions,
+      questions: shuffleQuestions((await quizController.findById(quizId)).questions),
       answers: new Map(),
     };
 
@@ -128,8 +142,11 @@ io.on('connection', socket => {
       rooms.delete(roomId);
       console.log(`Quiz ended for room ${roomId}`);
     } else {
-      io.to(roomId).emit('nextQuestion', { question: room.questions[room.currentQuestionIndex] });
-      console.log(`Next question for room ${roomId}: ${room.questions[room.currentQuestionIndex]}`);
+      const question = room.questions[room.currentQuestionIndex];
+      const questionWithoutAnswers = { ...question, answers: question.answers.map(a => ({ answer: a.answer })) };
+
+      io.to(roomId).emit('nextQuestion', { question: questionWithoutAnswers });
+      console.log(`Next question for room ${roomId}: ${question}`);
     }
     return callback({ success: true });
   });
