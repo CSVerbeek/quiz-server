@@ -50,6 +50,12 @@ app.post('/question', (req, res) => {
     res.status(201).send(quiz);
   });
 });
+app.get('/quiz/:quizid', (req, res) => {
+  quizController.findById(req.params.quizid);
+});
+app.get('/quiz', (req, res) => {
+  quizController.findAll();
+});
 
 function shuffleQuestions(questions: Question[]): Question[] {
   for (let i = questions.length - 1; i > 0; i--) {
