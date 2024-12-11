@@ -2,8 +2,12 @@ import express from 'express';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { v4 as uuidv4 } from 'uuid';
+import { QuizesController } from './quizes/quizes.controller';
+import { QuizService } from './quizes/quiz.service';
+import { FileSystemQuizRepository } from './quizes/file-system-quiz.repository';
 
 const app = express();
+app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -32,6 +36,19 @@ const rooms: Map<string, Room> = new Map();
 // Serve a welcome message
 app.get('/', (req, res) => {
   res.send('Quiz Server is Running!');
+});
+
+const quizController = new QuizesController(new QuizService(new FileSystemQuizRepository()));
+app.post('/quiz', (req, res) => {
+  quizController.createQuiz(req.body).then(quiz => {
+    res.status(201).send(quiz);
+  });
+});
+app.post('/question', (req, res) => {
+  const { quizId, question } = req.body;
+  quizController.addQuestion(quizId, question).then(quiz => {
+    res.status(201).send(quiz);
+  });
 });
 
 /**
