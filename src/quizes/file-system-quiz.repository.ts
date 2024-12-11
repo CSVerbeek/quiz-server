@@ -17,18 +17,17 @@ export class FileSystemQuizRepository {
   getAll(): Promise<Quiz[]> {
     return new Promise<Quiz[]>((resolve, reject) => {
       fs.readdir(this.repoDir, (err, files) => {
+        console.log('Resolving', files);
         if (err) {
           reject('Error reading quizes');
           return;
         }
         const result: Quiz[] = [];
         files.forEach(fileName => {
-          fs.readFile(path.join(this.repoDir, fileName), 'utf8', (err, content) => {
-            if (!err) {
-              const quiz: Quiz = JSON.parse(content);
-              result.push(quiz);
-            }
-          });
+          const content = fs.readFileSync(path.join(this.repoDir, fileName), 'utf8');
+
+          const quiz: Quiz = JSON.parse(content);
+          result.push(quiz);
         });
         resolve(result);
       });
@@ -36,6 +35,7 @@ export class FileSystemQuizRepository {
   }
 
   getById(quizId: Quiz['id']): Promise<Quiz> {
+    console.log('Finding by id', quizId);
     return new Promise<Quiz>((resolve, reject) => {
       fs.readFile(path.join(this.repoDir, quizId), 'utf8', (err, content) => {
         if (err) {

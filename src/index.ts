@@ -53,11 +53,14 @@ app.post('/question', (req, res) => {
 app.get('/quiz/:quizid', (req, res) => {
   quizController.findById(req.params.quizid);
 });
-app.get('/quiz', (req, res) => {
-  quizController.findAll();
+app.get('/quiz', async (req, res) => {
+  const quizes = await quizController.findAll();
+  console.log(quizes);
+  res.status(200).send(quizes);
 });
 
-function shuffleQuestions(questions: Question[]): Question[] {
+function shuffleQuestions(questionsOriginal: Question[]): Question[] {
+  const questions = [...questionsOriginal];
   for (let i = questions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [questions[i], questions[j]] = [questions[j], questions[i]];
@@ -76,7 +79,12 @@ io.on('connection', socket => {
     if (!playerName) {
       return callback({ success: false, message: 'Player name is required' });
     }
+    if (!roomId) {
+      return callback({ success: false, message: 'Room name is required' });
+    }
 
+    console.log('Trying to find room', roomId);
+    console.log(rooms);
     let room = rooms.get(roomId);
     if (!room) {
       return callback({ success: false, message: 'Room does not exist' });
@@ -104,19 +112,23 @@ io.on('connection', socket => {
     if (!quizId || quizId.length === 0) {
       return callback({ success: false, message: 'A quiz is required to start a quiz' });
     }
+    const quiz = await quizController.findById(quizId);
+    if (!quiz) {
+      return callback({ success: false, message: 'Quiz not found' });
+    }
+    const questions = shuffleQuestions(quiz.questions);
 
     const roomId = roomName;
     const newRoom: Room = {
       id: roomId,
       players: [],
       currentQuestionIndex: 0,
-      questions: shuffleQuestions((await quizController.findById(quizId)).questions),
+      questions,
       answers: new Map(),
     };
 
     rooms.set(roomId, newRoom);
     console.log(`Quiz started with room ID: ${roomId}`);
-
     return callback({ success: true, message: 'Quiz started successfully', roomId });
   });
 
@@ -131,6 +143,7 @@ io.on('connection', socket => {
     rooms.set(roomId, room);
 
     console.log(`Player ${socket.id} submitted answer: ${answer} for room ${roomId}`);
+    console.log(room.answers);
 
     return callback({ success: true, message: 'Answer submitted successfully' });
   });
