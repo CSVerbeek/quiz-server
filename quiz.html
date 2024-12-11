@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Client</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+  <h1>Quiz App Socket.IO Client</h1>
+  <button onclick="startQuiz()">Start Quiz</button>
+  <button onclick="joinRoom()">Join Room</button>
+  <button onclick="submitAnswer()">Submit Answer</button>
+  <button onclick="nextQuestion()">Next Question</button>
+
+  <script>
+    const socket = io('http://localhost:3000'); // Replace with your server's address
+    let = 'Fixed name';
+
+    socket.on('connect', () => {
+      console.log('Connected to server:', socket.id);
+    });
+
+    // Event: Player joined
+    socket.on('playerJoined', (data) => {
+      console.log('Player joined:', data);
+    });
+
+    // Event: Next question
+    socket.on('nextQuestion', (data) => {
+      console.log('Next question:', data.question);
+    });
+
+    // Event: Quiz ended
+    socket.on('quizEnded', (data) => {
+      console.log('Quiz ended. Answers:', data.answers);
+    });
+
+    let roomId = 'Fixed name';
+
+    // Start a new quiz
+    function startQuiz() {
+      const quizId = 'c3913cb6-d64b-4280-b7e3-d5011fdf4294';
+      const roomName = 'Fixed name';
+      socket.emit('startQuiz', { quizId, roomName }, (response) => {
+        if (response.success) {
+          roomId = 'Fixed name';
+          console.log('Quiz started. Room ID:', roomId);
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+
+    // Join a room
+    function joinRoom() {
+      // if (!roomId) {
+      //   console.error('No room ID available. Start a quiz first.');
+      //   return;
+      // }
+      const playerName = prompt('Enter your name:');
+      socket.emit('joinRoom', { playerName, roomId: 'Fixed name' }, (response) => {
+        if (response.success) {
+          console.log('Joined room:', roomId);
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+
+    // Submit an answer
+    function submitAnswer() {
+      const answer = prompt('Enter your answer:');
+      socket.emit('submitAnswer', { roomId: 'Fixed name', answer }, (response) => {
+        if (response.success) {
+          console.log('Answer submitted:', answer);
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+
+    // Move to the next question
+    function nextQuestion() {
+      if (!roomId) {
+        console.error('No room ID available.');
+        return;
+      }
+      socket.emit('nextQuestion', { roomId }, (response) => {
+        if (response.success) {
+          console.log('Moved to the next question.');
+        } else {
+          console.error(response.message);
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
