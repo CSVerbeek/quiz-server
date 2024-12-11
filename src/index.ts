@@ -59,13 +59,17 @@ app.get('/quiz', async (req, res) => {
   res.status(200).send(quizes);
 });
 
-function shuffleQuestions(questionsOriginal: Question[]): Question[] {
-  const questions = [...questionsOriginal];
-  for (let i = questions.length - 1; i > 0; i--) {
+function shuffleAnswers(questionsOriginal: Question[]): Question[] {
+  return questionsOriginal.map(q => ({ ...q, answers: shuffleArr(q.answers) }));
+}
+
+function shuffleArr(arrOriginal: Question['answers']): Question['answers'] {
+  const arr = [...arrOriginal];
+  for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [questions[i], questions[j]] = [questions[j], questions[i]];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return questions;
+  return arr;
 }
 
 /**
@@ -116,7 +120,7 @@ io.on('connection', socket => {
     if (!quiz) {
       return callback({ success: false, message: 'Quiz not found' });
     }
-    const questions = shuffleQuestions(quiz.questions);
+    const questions = shuffleAnswers(quiz.questions);
 
     const roomId = roomName;
     const newRoom: Room = {

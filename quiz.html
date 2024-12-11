@@ -14,9 +14,11 @@
   <button onclick="submitAnswer()">Submit Answer</button>
   <button onclick="nextQuestion()">Next Question</button>
 
+  <div id="question"></div>
+
   <script>
     const socket = io('http://localhost:3000'); // Replace with your server's address
-    let = 'Fixed name';
+    let roomId = 'Fixed name';
 
     socket.on('connect', () => {
       console.log('Connected to server:', socket.id);
@@ -30,14 +32,33 @@
     // Event: Next question
     socket.on('nextQuestion', (data) => {
       console.log('Next question:', data.question);
+      const questionDiv = document.getElementById("question");
+      questionDiv.innerHTML = '';
+
+      const questionObject = data.question;
+      // Create an element for the question
+      const questionText = document.createElement("h2");
+      questionText.textContent = questionObject.question; // Add question text
+      questionDiv.appendChild(questionText);
+
+      // Create a list for the answers
+      const answerList = document.createElement("ul"); // Unordered list
+
+      // Loop through the answers and create list items
+      questionObject.answers.forEach((item) => {
+        const listItem = document.createElement("li"); // Create a list item
+        listItem.textContent = item.answer; // Add answer text
+        answerList.appendChild(listItem); // Append to the list
+      });
+
+      // Append the answer list to the div
+      questionDiv.appendChild(answerList);
     });
 
     // Event: Quiz ended
     socket.on('quizEnded', (data) => {
       console.log('Quiz ended. Answers:', data.answers);
     });
-
-    let roomId = 'Fixed name';
 
     // Start a new quiz
     function startQuiz() {
